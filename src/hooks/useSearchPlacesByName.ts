@@ -37,7 +37,6 @@ export const useSearchPlacesByName = () => {
       try {
         setLoading(true);
         let placePredictions = await getPlacesByName(searchText!);
-        console.log("Place Predictions:", placePredictions);
         setSearchResults(placePredictions);
       } finally {
         setLoading(false);

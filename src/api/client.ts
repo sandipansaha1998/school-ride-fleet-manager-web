@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://192.168.1.15:8080/api/v1",
+  baseURL: "http://localhost:8080/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -12,7 +12,6 @@ apiClient.interceptors.request.use(
   (config) => {
     // Axios combines baseURL + url + params here
     const url = axios.getUri(config);
-    console.log("Actual request URL:", url);
     return config;
   },
   (error) => {

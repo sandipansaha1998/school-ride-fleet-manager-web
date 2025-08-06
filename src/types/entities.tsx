@@ -18,3 +18,12 @@ export interface Direction {
   destination: Point;
   waypoints: Point[];
 }
+
+export interface School {
+  id: string;
+  placeId: string;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}

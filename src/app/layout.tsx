@@ -4,7 +4,9 @@ import "./globals.css";
 import Sidebar from "../components/Sidebar";
 import "@mantine/core/styles.layer.css";
 import "mantine-datatable/styles.layer.css";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
+import { SchoolProvider } from "@/context/SchoolContext";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,10 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-row pb-3`}
       >
-        <MantineProvider>
-          <Sidebar />
-          <div className="flex-1 overflow-hidden ">{children}</div>
-        </MantineProvider>
+        <div className="flex flex-1 overflow-hidden ">{children}</div>
       </body>
     </html>
   );

@@ -1,11 +1,20 @@
 import apiClient from "./client";
 
-export const getRequest = async (url: string, params?: any) => {
+export const getRequest = async ({
+  url,
+  queryParams,
+}: {
+  url: string;
+  queryParams?: Record<string, any>;
+}) => {
   try {
-    const response = await apiClient.get(url, { params });
+    const response = await apiClient.get(url, {
+      params: queryParams,
+    });
     return response.data;
   } catch (error) {
     console.error("GET request failed:", error);
+    ``;
     throw error;
   }
 };

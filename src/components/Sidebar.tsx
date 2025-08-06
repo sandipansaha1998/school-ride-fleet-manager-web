@@ -16,10 +16,10 @@ import {
 import brandLogo from "@/assets/images/brand.png";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Routes", href: "/routes", icon: Route },
-  { label: "Students", href: "/students", icon: GraduationCap },
-  { label: "Bus", href: "/Profile", icon: BusFrontIcon },
+  { label: "Dashboard", href: "/fleet/dashboard", icon: LayoutDashboard },
+  { label: "Routes", href: "/fleet/routes", icon: Route },
+  { label: "Students", href: "/fleet/students", icon: GraduationCap },
+  { label: "Bus", href: "/fleet/bus", icon: BusFrontIcon },
 ];
 
 export default function Sidebar() {

@@ -1,9 +1,9 @@
 "use client";
 import { CustomTable } from "@/components/CustomTable";
 import RouteInfoView from "@/components/Routes/routeInfo";
+import { DAVSchool } from "@/seedData/identity";
 import { routes as routesReponse } from "@/seedData/routes";
-import { RouteInfoType } from "@/types/maps";
-import { randomUUID } from "crypto";
+import { BusRouteInfoType } from "@/types/maps";
 import { Eye, Route, Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -18,7 +18,7 @@ const Routes = () => {
   const [workingMode, setWorkingMode] = useState<RouteActions>(
     RouteActions.ViewOnly
   );
-  const [routes, setRoutes] = useState<RouteInfoType[]>([]);
+  const [routes, setRoutes] = useState<BusRouteInfoType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [routeName, setRouteName] = useState("");
 
@@ -46,9 +46,9 @@ const Routes = () => {
     fetchRoutes();
   }, []);
 
-  const routes1: RouteInfoType[] = [];
+  const routes1: BusRouteInfoType[] = [];
   return (
-    <div className="  flex flex-col gap-2  border-red-500 min-h-screen">
+    <div className="  flex flex-col gap-2  border-red-500 min-h-screen  flex-1">
       {workingMode === RouteActions.ViewOnly && (
         <div className="flex ms-10  mt-10 gap-2 items-center justify-between me-5 ">
           <div className="flex flex-col gap-2">
@@ -69,7 +69,8 @@ const Routes = () => {
         <div className=" max-h-screen overflow-y-auto ps-10 pe-2">
           <hr className="border-t-3 border-gray-200  w-full mx-auto my-3" />
 
-          <CustomTable
+          {/* <CustomTable
+            key={"routes-table"}
             headers={["name", "stops", "activeBuses", "students"]}
             data={[
               {
@@ -91,14 +92,25 @@ const Routes = () => {
                 students: 30,
               },
             ]}
-          />
+          /> */}
         </div>
       )}
       {workingMode === RouteActions.AddNew && (
         <div className="flex-1 flex  ">
           {" "}
           <RouteInfoView
-            routeInfo={{ id: "TODO", name: routeName, points: [] }}
+            routeInfo={{
+              id: "TODO",
+              name: routeName,
+              stops: [
+                {
+                  id: DAVSchool.placeId,
+                  address: DAVSchool.address,
+                  latitude: DAVSchool.latitude,
+                  longitude: DAVSchool.longitude,
+                },
+              ],
+            }}
           />
         </div>
       )}

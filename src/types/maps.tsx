@@ -9,7 +9,7 @@ export interface PlacePrediction {
   };
 }
 
-export interface RouteInfoType {
+export interface BusRouteInfoType {
   id: string;
   name: string;
   stops: Address[];

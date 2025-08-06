@@ -1,8 +1,5 @@
 "use client";
 import { useState } from "react";
-import Map from "./maps";
-import brandLogo from "@/assets/images/brand.png";
-import { LayoutDashboard, Route } from "lucide-react";
 type Bus = {
   id: number;
   name: string;

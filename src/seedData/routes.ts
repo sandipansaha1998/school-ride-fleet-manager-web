@@ -1,3 +1,5 @@
+import { Route } from "@/types/entities";
+
 export const routes: Route[] = Array.from({ length: 10 }, (_, routeIdx) => ({
   id: (routeIdx + 1).toString(),
   name: `Route ${routeIdx + 1}`,

@@ -1,4 +1,5 @@
 import { getLocationByPlaceId } from "@/api/services.ts/maps";
+import { Address } from "@/types/entities";
 import { useState, useEffect, useCallback } from "react";
 
 const useSelectAddressByPlaceId = () => {

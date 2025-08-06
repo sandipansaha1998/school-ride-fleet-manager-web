@@ -23,6 +23,7 @@ export function CustomTable(tableProps: TableProps) {
       columns={headers.map((header: string) => {
         return { accessor: header };
       })}
+      key={headers.join("-")}
     />
   );
 }

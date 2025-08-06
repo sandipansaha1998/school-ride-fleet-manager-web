@@ -1,15 +1,13 @@
 import { PlacePrediction } from "@/types/maps";
 import { MapsEndPoints } from "../endpoints";
-import { getRequest } from "../requests";
+import { getRequest, postRequest } from "../requests";
 import { Address } from "@/types/entities";
 export const getLocationByPlaceId = async (
   placeId: string
 ): Promise<Address> => {
-  console.log("Fetching geometry for place ID:", placeId);
-  const response = await getRequest(
-    MapsEndPoints.getLocationByPlaceId(placeId)
-  );
-  console.log("Response from getLocationByPlaceId:", response);
+  const response = await getRequest({
+    url: MapsEndPoints.getLocationByPlaceId(placeId),
+  });
   let addressString = response.address.split(",");
 
   return {
@@ -23,11 +21,14 @@ export const getLocationByPlaceId = async (
 export const getPlacesByName = async (
   name: string
 ): Promise<PlacePrediction[]> => {
-  console.log("Fetching places by name:", name);
-  const response = await getRequest(MapsEndPoints.searchPlacesByName, { name });
+  const response = await getRequest({
+    url: MapsEndPoints.searchPlacesByName,
+    queryParams: { name },
+  });
 
   const predictions = response.predictions;
   const result: PlacePrediction[] = [];
+  ``;
 
   try {
     for (const prediction of predictions) {
@@ -38,7 +39,6 @@ export const getPlacesByName = async (
         types: prediction.types,
       } as PlacePrediction);
     }
-    console.log(result);
     return result;
   } catch (error) {
     console.error("Error processing prediction:", error);
@@ -51,18 +51,9 @@ export const getDirections = async (
   destination: string,
   waypoints?: string[]
 ): Promise<any> => {
-  console.log("Fetching directions from", origin, "to", destination);
-  const params: any = {};
-  if (waypoints && waypoints.length > 0) {
-    params.waypoints = waypoints;
-  }
-  const response = await getRequest(
-    MapsEndPoints.getDirections(origin, destination),
-    params
-  );
-  console.log("Response from getDirections:", response);
-  if (response.status !== "OK") {
-    throw new Error(`Error fetching directions: ${response.statusText}`);
-  }
+  const response = await postRequest(MapsEndPoints.getDirections(), {
+    placeIDs: [origin, destination, ...(waypoints || [])],
+  });
+
   return response;
 };
