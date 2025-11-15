@@ -1,4 +1,4 @@
-import { getLocationByPlaceId } from "@/api/services.ts/maps";
+import { getLocationByPlaceId } from "@/api/services/maps";
 import { Address } from "@/types/entities";
 import { useState, useEffect, useCallback } from "react";
 

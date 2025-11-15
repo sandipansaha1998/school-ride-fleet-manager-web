@@ -25,14 +25,19 @@ const Map = ({
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   // Called when map is loaded
-  const onLoad = useCallback((map: google.maps.Map) => {
-    mapRef.current = map;
-    // setIsLoaded(true);
-  }, []);
+  const onLoad = useCallback(
+    (map: google.maps.Map) => {
+      mapRef.current = map;
+      setIsLoaded(true);
+    },
+    [mapRef.current]
+  );
 
-  // Fit bounds and smooth pan when centroid or stops change
+  // // Fit bounds and smooth pan when centroid or stops change
   useEffect(() => {
+    console.log("Map useEffect triggered", stops);
     const map = mapRef.current;
+
     if (!map) return;
 
     // Collect all points: centroid + stops
@@ -40,6 +45,7 @@ const Map = ({
     if (centroid) points.push(centroid);
     if (stops && stops.length > 0) points.push(...stops);
 
+    console.log("Fitting bounds to points:", points);
     if (points.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
       points.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
@@ -52,28 +58,7 @@ const Map = ({
       // Fit bounds to all points (with some padding)
       map.fitBounds(bounds, 80);
     }
-  }, [centroid, stops]);
-  useEffect(() => {
-    const googleScript = document.getElementById("google-map-script");
-    if (!googleScript) {
-      return;
-    }
-    googleScript.addEventListener("load", () => {
-      if (googleScript) {
-        setIsLoaded(true);
-      }
-    });
-    return () => {
-      googleScript.removeEventListener("load", () => {});
-    };
-  });
-  useEffect(() => {
-    const googleScript = document.getElementById("google-map-script");
-
-    if (typeof window !== "undefined" && window.google) {
-      setIsLoaded(true);
-    }
-  }, [window]);
+  }, [stops]);
 
   return (
     <LoadScript
@@ -89,7 +74,7 @@ const Map = ({
     >
       <GoogleMap
         mapContainerStyle={containerStyle}
-        center={centroid}
+        center={stops && stops.length === 1 ? schoolLocation : undefined}
         zoom={17}
         options={{
           disableDefaultUI: true,
@@ -97,74 +82,106 @@ const Map = ({
         }}
         onLoad={onLoad}
       >
-        {schoolLocation && (
+        {!isLoaded || window.google === null ? (
+          <>Loading...</>
+        ) : (
           <>
+            {" "}
             {schoolLocation && (
               <>
                 <Marker
                   position={schoolLocation}
                   icon={{
-                    path: "M12 2L2 10h3v10h6v-6h2v6h6V10h3z",
-                    fillColor: "#1976D2",
-                    fillOpacity: 1,
-                    strokeColor: "#0D47A1",
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 15,
+                    fillColor: "white",
+                    fillOpacity: 0.5,
+                    strokeColor: "black",
                     strokeWeight: 2,
-                    scale: 1.1,
+                    anchor: new window.google.maps.Point(-0.8, -0.75),
                   }}
+                />
+                <Marker
+                  position={schoolLocation}
+                  icon={{
+                    path: "M12 2L2 10h3v10h6v-6h2v6h6V10h3z",
+                    fillColor: "blue",
+                    fillOpacity: 1,
+                    strokeColor: "blue",
+                    strokeWeight: 2,
+                    scale: 1,
+                    anchor: new window.google.maps.Point(0, 0),
+                    labelOrigin: new window.google.maps.Point(15, 40),
+                  }}
+                  label={"SCHOOL"}
                 />
               </>
             )}
+            {stops &&
+              stops.map(
+                (marker, idx) =>
+                  idx !== 0 && (
+                    <Marker
+                      key={idx}
+                      position={{ lat: marker.lat, lng: marker.lng }}
+                      label={{
+                        text: `${idx}`,
+                        color: "black",
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                      }}
+                      icon={{
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 12,
+                        size: new window.google.maps.Size(20, 20),
+                        fillColor: "yellow",
+                        fillOpacity: 1,
+                        strokeColor: "black",
+                        strokeWeight: 3,
+                        labelOrigin: new window.google.maps.Point(0, 0),
+                      }}
+                    />
+                  )
+              )}
+            {polylines.length > 0 &&
+              (() => {
+                const points = decodePolyline(polylines[0]);
+                points.forEach((p, idx) => (
+                  <Marker
+                    key={`poly-point-${idx}`}
+                    position={{ lat: p.lat, lng: p.lng }}
+                    icon={{
+                      path: google.maps.SymbolPath.CIRCLE,
+                      scale: 6,
+                      fillColor: "red",
+                      fillOpacity: 1,
+                      strokeColor: "black",
+                      strokeWeight: 1,
+                    }}
+                  />
+                ));
+                return (
+                  <>
+                    {/* Polyline connecting the markers */}
+                    <Polyline
+                      path={points.map((p) => ({
+                        lat: p.lat,
+                        lng: p.lng,
+                      }))}
+                      options={{
+                        strokeColor: "#darkyellow",
+                        strokeOpacity: 1,
+                        strokeWeight: 3,
+                      }}
+                    />
+                  </>
+                );
+              })()}
           </>
         )}
-
-        {stops &&
-          stops.map((marker, idx) => (
-            <Marker
-              key={idx}
-              position={{ lat: marker.lat, lng: marker.lng }}
-              label={{
-                text: `${idx + 1}`,
-                color: "black",
-                fontWeight: "bold",
-                fontSize: "14px",
-              }}
-              // icon={{
-              //   path: google.maps.SymbolPath.CIRCLE,
-              //   scale: 12,
-              //   size: new window.google.maps.Size(20, 20),
-              //   fillColor: "yellow",
-              //   fillOpacity: 1,
-              //   strokeColor: "black",
-              //   strokeWeight: 3,
-              //   labelOrigin: new window.google.maps.Point(0, 0),
-              // }}
-            />
-          ))}
-        {polylines.map((polyline, idx) => {
-          const decodedPath = decodePolyline(polyline);
-          // Generate a random color for each polyline
-          const randomColor = `#${Math.floor(Math.random() * 16777215)
-            .toString(16)
-            .padStart(6, "0")}`;
-          return (
-            <Polyline
-              key={idx}
-              path={decodedPath.map((p) => ({
-                lat: p.lat,
-                lng: p.lng,
-              }))}
-              options={{
-                strokeColor: randomColor,
-                strokeOpacity: 1,
-                strokeWeight: 5,
-              }}
-            />
-          );
-        })}
       </GoogleMap>
     </LoadScript>
   );
 };
 
-// ...existing code...
-export default React.memo(Map);
+export default Map;

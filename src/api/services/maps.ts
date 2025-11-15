@@ -52,7 +52,7 @@ export const getDirections = async (
   waypoints?: string[]
 ): Promise<any> => {
   const response = await postRequest(MapsEndPoints.getDirections(), {
-    placeIDs: [origin, destination, ...(waypoints || [])],
+    placeIDs: [origin, ...(waypoints || []), destination],
   });
 
   return response;

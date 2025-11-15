@@ -1,4 +1,4 @@
-import { getPlacesByName } from "@/api/services.ts/maps";
+import { getPlacesByName } from "@/api/services/maps";
 import { PlacePrediction } from "@/types/maps";
 import { useEffect, useRef, useState } from "react";
 

@@ -1,4 +1,4 @@
-import { getDirections } from "@/api/services.ts/maps";
+import { getDirections } from "@/api/services/maps";
 import { Direction } from "@/types/entities";
 import { BusRouteInfoType, Point } from "@/types/maps";
 import { decodePolyline } from "@/utils/googleMaps";
@@ -21,8 +21,8 @@ const useJourney = (initialRouteInfo: BusRouteInfoType) => {
     );
     getDirections(
       route.stops[0].id,
-      route.stops[route.stops.length - 1].id,
-      route.stops.slice(1, -1).map((stop) => stop.id)
+      route.stops[0].id,
+      route.stops.slice(1).map((stop) => stop.id)
     ).then((data) => {
       let routes = data.routes;
       setAvailableDirection({

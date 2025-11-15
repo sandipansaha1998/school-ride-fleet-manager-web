@@ -1,11 +1,11 @@
 "use client";
-import { CustomTable } from "@/components/CustomTable";
 import RouteInfoView from "@/components/Routes/routeInfo";
 import { DAVSchool } from "@/seedData/identity";
-import { routes as routesReponse } from "@/seedData/routes";
 import { BusRouteInfoType } from "@/types/maps";
-import { Eye, Route, Trash } from "lucide-react";
+import { Eye, Plus, Route, Trash } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import TripsTable from "./components/RoutesTable";
+import { getRoutes } from "@/api/services/routes";
 
 enum RouteActions {
   ViewOnly,
@@ -21,6 +21,7 @@ const Routes = () => {
   const [routes, setRoutes] = useState<BusRouteInfoType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [routeName, setRouteName] = useState("");
+  const [activeRoute, setActiveRoute] = useState<BusRouteInfoType | null>(null);
 
   const handleAddRoute = () => {
     setShowModal(true);
@@ -38,15 +39,12 @@ const Routes = () => {
 
   useEffect(() => {
     const fetchRoutes = async () => {
-      // Simulating a delay for fetching data
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Set the fetched routes to state (if needed)
-      // setRoutes(routesReponse);
+      let fetchedRoutes = await getRoutes(DAVSchool.id);
+      setRoutes(fetchedRoutes);
     };
     fetchRoutes();
   }, []);
 
-  const routes1: BusRouteInfoType[] = [];
   return (
     <div className="  flex flex-col gap-2  border-red-500 min-h-screen  flex-1">
       {workingMode === RouteActions.ViewOnly && (
@@ -61,6 +59,7 @@ const Routes = () => {
             className=" shadow px-5 py-3 rounded-md bg-yellow-400 hover:bg-yellow-500 cursor-pointer text-black font-semibold flex items-center gap-2"
             onClick={handleAddRoute}
           >
+            <Plus />
             Add Route
           </div>
         </div>
@@ -69,30 +68,13 @@ const Routes = () => {
         <div className=" max-h-screen overflow-y-auto ps-10 pe-2">
           <hr className="border-t-3 border-gray-200  w-full mx-auto my-3" />
 
-          {/* <CustomTable
-            key={"routes-table"}
-            headers={["name", "stops", "activeBuses", "students"]}
-            data={[
-              {
-                name: "Route 1",
-                stops: Array.from(
-                  { length: 25 },
-                  (_, i) => `Stop ${i + 1}`
-                ).join(", "),
-                activeBuses: 2,
-                students: 60,
-              },
-              {
-                name: "Route 2",
-                stops: Array.from(
-                  { length: 25 },
-                  (_, i) => `Stop ${String.fromCharCode(65 + (i % 26))}`
-                ).join(", "),
-                activeBuses: 1,
-                students: 30,
-              },
-            ]}
-          /> */}
+          <TripsTable
+            data={routes}
+            onViewRoute={(index) => {
+              setWorkingMode(RouteActions.Edit);
+              setActiveRoute(routes[index]);
+            }}
+          />
         </div>
       )}
       {workingMode === RouteActions.AddNew && (
@@ -110,6 +92,17 @@ const Routes = () => {
                   longitude: DAVSchool.longitude,
                 },
               ],
+            }}
+          />
+        </div>
+      )}
+      {workingMode === RouteActions.Edit && (
+        <div className="flex-1 flex">
+          <RouteInfoView
+            routeInfo={{
+              id: activeRoute!.id,
+              name: activeRoute!.name,
+              stops: activeRoute!.stops,
             }}
           />
         </div>

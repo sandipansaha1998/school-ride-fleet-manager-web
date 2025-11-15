@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+
 import "./globals.css";
-import Sidebar from "../components/Sidebar";
-import "@mantine/core/styles.layer.css";
-import "mantine-datatable/styles.layer.css";
-import { MantineProvider } from "@mantine/core";
-import { SchoolProvider } from "@/context/SchoolContext";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,16 +24,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <head>{/* <ColorSchemeScript defaultColorScheme="auto" /> */}</head>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <ColorSchemeScript defaultColorScheme="light" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-row pb-3`}
       >
-        <div className="flex flex-1 overflow-hidden ">{children}</div>
+        <MantineProvider defaultColorScheme="light">
+          <Notifications position="top-right" zIndex={1000} />
+          <div className="flex flex-1">{children}</div>
+        </MantineProvider>
       </body>
     </html>
   );

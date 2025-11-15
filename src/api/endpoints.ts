@@ -4,7 +4,7 @@ export const SchoolEndPoints = {
   getSchools: "/schools",
 };
 export const RoutesEndPoints = {
-  getRoutesForSchoolId: (schoolID: string) => `/routes/${schoolID}`,
+  getRoutesForSchoolId: (schoolID: string) => `/bus-routes/`,
   saveRoute: `/bus-routes/ `,
 };
 export const MapsEndPoints = {

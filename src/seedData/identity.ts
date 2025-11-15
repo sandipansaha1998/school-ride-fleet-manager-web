@@ -8,4 +8,5 @@ export const DAVSchool: School = {
   latitude: 18.5600007,
   longitude: 73.8038028,
   name: "D.A.V. Public School, Pune",
+  code: "DAV01",
 };

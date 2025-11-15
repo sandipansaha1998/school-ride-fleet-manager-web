@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -19,4 +17,7 @@
   }
 }
 
+
+
+@import "tailwindcss";
 @layer mantine, mantine-datatable;

@@ -12,14 +12,17 @@ import {
   PanelLeftClose,
   PersonStanding,
   Route,
+  School,
 } from "lucide-react";
 import brandLogo from "@/assets/images/brand.png";
+import { DAVSchool } from "@/seedData/identity";
 
 const navItems = [
   { label: "Dashboard", href: "/fleet/dashboard", icon: LayoutDashboard },
   { label: "Routes", href: "/fleet/routes", icon: Route },
   { label: "Students", href: "/fleet/students", icon: GraduationCap },
   { label: "Bus", href: "/fleet/bus", icon: BusFrontIcon },
+  { label: "Trips", href: "/fleet/trips", icon: Bus },
 ];
 
 export default function Sidebar() {
@@ -41,12 +44,14 @@ export default function Sidebar() {
       </div>
       <hr className="border-t-3 border-gray-200  w-full mx-auto" />
       <div className="bg-gray-100 h-15  my-5 flex border border-gray-300 rounded-lg  ">
-        <div className=" text-2xl p-3">H</div>
+        <div className=" text-2xl p-3">
+          <School />
+        </div>
         <div className="flex flex-col my-auto overflow-hidden">
           <div className=" font-semibold truncate " title="Holy Child School">
-            Holy Child School
+            {DAVSchool.name}
           </div>
-          <span>HCS02</span>
+          <span>{DAVSchool.code}</span>
         </div>
       </div>
       <hr className="border-t-3 border-gray-200  w-full mx-auto" />

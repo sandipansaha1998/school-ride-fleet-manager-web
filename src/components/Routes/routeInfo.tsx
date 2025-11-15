@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Map from "../Map";
 import {
   ArrowDownToDotIcon,
@@ -23,16 +23,21 @@ import {
 import { Marker } from "react-google-maps";
 import { getPolygonCentroid } from "@/utils/geometry";
 import { BusRouteInfoType, Point } from "@/types/maps";
-import { Direction, Route } from "@/types/entities";
+import { Direction } from "@/types/entities";
 import useJourney from "@/hooks/useJourney";
 import { DAVSchool } from "@/seedData/identity";
-import { saveRoute } from "@/api/services.ts/routes";
+import { saveRoute } from "@/api/services/routes";
 
 const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
-  let { id, name, stops } = routeInfo;
-
   let { route, updateStops, availableDirection } = useJourney(routeInfo);
-
+  const stops = useMemo(
+    () =>
+      route.stops.map((stop) => ({
+        lat: stop.latitude,
+        lng: stop.longitude,
+      })),
+    [route.stops]
+  );
   const [saving, setSaving] = useState(false);
 
   const handleSaveRoute = async () => {
@@ -47,6 +52,7 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
         placeIDs: route.stops.map((stop) => stop.id),
         direction: availableDirection!.polyline,
         name: route.name,
+        distance: availableDirection!.distance,
       });
       // Optionally show a success message here
     } catch (error) {
@@ -105,6 +111,7 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
                 length={route.stops.length}
                 showTraillingDots
                 showLastDot={searchText !== undefined}
+                showHomeLocation
               />
             )}
             {route.stops.length > 0 && (
@@ -144,22 +151,24 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
                                   readOnly
                                   disabled
                                 />
-                                <button
-                                  type="button"
-                                  className="p-2 hover:text-red-600"
-                                  aria-label="Delete"
-                                  onClick={() => {
-                                    // Delete callback for the stops
-                                    // This will remove the stop from the route
-                                    // and update the state
-                                    let updatedStops = route.stops.filter(
-                                      (s) => s.id !== stop.id
-                                    );
-                                    updateStops(updatedStops);
-                                  }}
-                                >
-                                  &#10005;
-                                </button>
+                                {idx !== 0 && (
+                                  <button
+                                    type="button"
+                                    className="p-2 hover:text-red-600"
+                                    aria-label="Delete"
+                                    onClick={() => {
+                                      // Delete callback for the stops
+                                      // This will remove the stop from the route
+                                      // and update the state
+                                      let updatedStops = route.stops.filter(
+                                        (s) => s.id !== stop.id
+                                      );
+                                      updateStops(updatedStops);
+                                    }}
+                                  >
+                                    &#10005;
+                                  </button>
+                                )}
                               </div>
                             )}
                           </Draggable>
@@ -172,7 +181,7 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
               </div>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 ">
             {searchText !== undefined && (
               <JourneyIcon length={1} showTraillingDots={false} />
             )}
@@ -260,10 +269,15 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
       </div>
       <div className="flex-3 ">
         {/* display the distance */}
-        <div className="text-sm text-gray-500">
-          Distance: {availableDirection?.distance}
-          km
-        </div>
+        {availableDirection?.distance && (
+          <div className="text-lg text-gray-500 ms-2">
+            Distance:
+            <span className="text-black font-semibold mx-1">
+              {availableDirection?.distance}
+            </span>
+            km
+          </div>
+        )}
         <Map
           schoolLocation={{ lat: DAVSchool.latitude, lng: DAVSchool.longitude }}
           centroid={getPolygonCentroid([
@@ -273,10 +287,7 @@ const RouteInfoView = ({ routeInfo }: { routeInfo: BusRouteInfoType }) => {
               lng: stop.longitude,
             })),
           ])}
-          stops={route.stops.map((stop) => ({
-            lat: stop.latitude,
-            lng: stop.longitude,
-          }))}
+          stops={stops}
           polylines={availableDirection ? [availableDirection.polyline] : []}
         />
       </div>
